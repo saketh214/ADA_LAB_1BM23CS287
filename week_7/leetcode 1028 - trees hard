@@ -1,0 +1,46 @@
+struct StackNode {
+    struct TreeNode* node;
+    int depth;
+};
+
+struct TreeNode* recoverFromPreorder(char* traversal) {
+    struct StackNode stack[1000];
+    int top = -1;
+    int i = 0;
+
+    while (traversal[i] != '\0') {
+        int depth = 0;
+        while (traversal[i] == '-') {
+            depth++;
+            i++;
+        }
+
+        int val = 0;
+        while (traversal[i] >= '0' && traversal[i] <= '9') {
+            val = val * 10 + (traversal[i] - '0');
+            i++;
+        }
+
+        struct TreeNode* node = malloc(sizeof(struct TreeNode));
+        node->val = val;
+        node->left = 0;
+        node->right = 0;
+
+        while (top >= 0 && stack[top].depth >= depth) {
+            top--;
+        }
+
+        if (top >= 0) {
+            if (stack[top].node->left == 0)
+                stack[top].node->left = node;
+            else
+                stack[top].node->right = node;
+        }
+
+        top++;
+        stack[top].node = node;
+        stack[top].depth = depth;
+    }
+
+    return stack[0].node;
+}
